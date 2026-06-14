@@ -4,7 +4,7 @@ from activations import sigmoid
 
 def diff_sigmoid(ar_x):
     a = sigmoid(ar_x)
-    return a*(np.ones(len(a))-a)
+    return a*(np.ones(np.shape(a))-a)
 
 def diff_softmax(ar_x):
     sumexp_x = np.sum(np.exp(ar_x))

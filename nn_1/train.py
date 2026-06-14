@@ -9,6 +9,7 @@ from activations import softmax
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pickle 
+import time
 
 mnist = fetch_openml('mnist_784', version=1)
 
@@ -48,31 +49,54 @@ W = [
     np.random.randn(lays[i+1], lays[i] + 1) * np.sqrt(2 / lays[i])
     for i in range(len(lays) - 1)
 ]
-num_iters = 100
+num_iters = 25
 it = 0
 lr=0.01
 #grads_ = [np.zeros(np.shape(i)) for i in W]
 #print(f"grads_av : {grads_av}")
+
 loss_lst = []
+batch_size = 100
+start = time.perf_counter()
+print("Starting Training....")
 while it<num_iters:
     m=len(X_train)
     grads_sum = [np.zeros(np.shape(W[len(W)-1-i])) for i in range(len(W))]
     los_sum=0
-    for ex in range(m):
-        data = X_train[ex]
-        gt = y_train[ex]
+    i=0
+    count=0
+    while i<m:
+        data = X_train[i:min(i+batch_size,m), :]
+        gt = y_train[i:min(i+batch_size,m), :]
+        # print(f"ytrain dim : {np.shape(y_train)}")
+        # print(f"xtrain0 dim : {np.shape(y_train[0].T)}")
+        #print(f"data dim : {np.shape(data)}")
         fp_dict = forward_pass(data, config, 'sigmoid', W)
+        # print("forward pass done!")
         loss = cross_entropy(gt, np.clip(softmax(fp_dict['a'][-1]), 1e-9, 1 - 1e-9))
-        los_sum+=loss
+        # print(np.shape(loss))
+        # print(f"loss : {loss}")
+        # print(f"mean_loss_vec : {loss.mean(axis=0)}")
+        av_los = loss.mean(axis=0).sum()
+        los_sum+=av_los
         grads = bpass(gt, fp_dict, W)
-        grads_sum = [grads_sum[i] + grads[i] for i in range(len(grads))]
-    grads_av = [i/m for i in grads_sum]
-    W = update(W, lr, grads_av)
-    loss_lst.append(np.sum(los_sum/m))
-    print(f"epoch : {it+1}, loss_vec : {los_sum/m}, average loss : {np.sum(los_sum/m)}")
-    it+=1
+        # grads_sum = [grads_sum[i] + grads[i] for i in range(len(grads))]
+        #print("train loop ran successfully!")
+        W = update(W, lr, grads)
+        count+=1
+        i+=batch_size
+        #print(f"batch : {count}, loss : {av_los}")
 
-with open('models/ep_100_lr_0.01_128-64-10.pkl', 'wb') as f:
+    # grads_av = [i/m for i in grads_sum]
+    # W = update(W, lr, grads_av)
+    #print(f"count : {count}")
+    loss_lst.append(los_sum/count)
+    #print(f"epoch : {it+1}, loss_vec : {los_sum/m}, average loss : {np.sum(los_sum/m)}")
+    print(f"epoch : {it+1}, average loss : {los_sum/count}")
+    it+=1
+end = time.perf_counter()
+print(f"Training loop ran for {end-start} seconds")
+with open('models/epo_25_lr_0.01_mb_64-10.pkl', 'wb') as f:
     pickle.dump(W, f)
 plt.plot(loss_lst)
 plt.show()
@@ -82,18 +106,18 @@ tn = len(X_test)
 pred_nums=[]
 y_test_nums = []
 
-# with open("models/ep_100_lr_0.01_3-15-10.pkl", "rb") as f:
+# with open("models/epo_25_lr_0.01_mb_64-10.pkl", "rb") as f:
 #     W = pickle.load(f)
 
 data_prev = np.zeros(len(X_test[0]))
 for tex in range(tn):
-    data = X_test[tex]
+    data = X_test[[tex]]
     #print(f"data : {data}")
     #print(f"is_dat_equal : {data_prev==data}")
-    gt = y_test[tex]
+    gt = y_test[[tex]]
     fp_dict = forward_pass(data, config, 'sigmoid', W)
     pred = softmax(fp_dict['a'][-1])
-    #print(f"pred : {pred}")
+    print(f"pred : {pred}")
     pred_num = np.argmax(pred)
     act_num = np.argmax(gt)
     pred_nums.append(pred_num)
