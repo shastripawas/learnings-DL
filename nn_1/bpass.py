@@ -1,4 +1,4 @@
-import numpy as np
+import cupy as np
 from compute_gradient import diff_loss, diff_sigmoid, diff_softmax
 from activations import softmax
 

@@ -1,4 +1,4 @@
-import numpy as np
+import cupy as np
 
 def cross_entropy(gt, pred):
     #print(f"inside loss gtdim : {np.shape(gt)}, pred dim : {np.shape(pred)}")

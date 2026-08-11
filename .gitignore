@@ -1,3 +1,8 @@
 */models/
 *.pyc
 */.vscode/
+*/data/
+*/trained/
+*.zip
+*.pkl
+*.txt

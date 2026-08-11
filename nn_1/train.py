@@ -1,5 +1,6 @@
 from sklearn.datasets import fetch_openml
-import numpy as np
+import cupy as np
+import numpy as npo
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from fpass import forward_pass
@@ -15,15 +16,15 @@ mnist = fetch_openml('mnist_784', version=1)
 
 X = mnist.data   # shape: (70000, 784)
 y = mnist.target
-y = np.array([int(i) for i in list(y)])
+y = npo.array([int(i) for i in list(y)])
 gt=[]
 for i in y:
     #print(i)
     #print(type(i))
     temp = [1 if j==i else 0 for j in range(10)]
-    temp=np.array(temp)
+    temp=npo.array(temp)
     gt.append(temp)
-gt = np.array(gt)
+gt = npo.array(gt)
 X_train, X_test, y_train, y_test = train_test_split(
     X, gt,
     test_size=0.1,      # 80-20 split
@@ -56,7 +57,7 @@ lr=0.01
 #print(f"grads_av : {grads_av}")
 
 loss_lst = []
-batch_size = 100
+batch_size = 512
 start = time.perf_counter()
 print("Starting Training....")
 while it<num_iters:

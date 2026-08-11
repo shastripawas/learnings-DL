@@ -2,7 +2,7 @@ from fpass import forward_pass
 from bpass import bpass, update
 from loss import cross_entropy
 from activations import softmax
-import numpy as np
+import cupy as np
 
 data = np.random.rand(12)*100
 config = [3,4,3]

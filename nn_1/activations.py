@@ -1,5 +1,5 @@
 import math
-import numpy as np
+import cupy as np
 
 def sigmoid(ar_x):
     ar_x = np.clip(ar_x, -500, 500) 

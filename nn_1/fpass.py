@@ -1,4 +1,4 @@
-import numpy as np
+import cupy as np
 from activations import fire, softmax
 
 def build_layer_forward(n_curr, n_prev, out_prev, activation, W):
