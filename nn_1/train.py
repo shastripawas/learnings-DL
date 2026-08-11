@@ -99,7 +99,7 @@ end = time.perf_counter()
 print(f"Training loop ran for {end-start} seconds")
 with open('models/epo_25_lr_0.01_mb_64-10.pkl', 'wb') as f:
     pickle.dump(W, f)
-plt.plot(loss_lst)
+plt.plot([j.item() for j in loss_lst])
 plt.show()
 
 print("Model Trained. Running inference on test set......")
@@ -118,7 +118,7 @@ for tex in range(tn):
     gt = y_test[[tex]]
     fp_dict = forward_pass(data, config, 'sigmoid', W)
     pred = softmax(fp_dict['a'][-1])
-    print(f"pred : {pred}")
+    #print(f"pred : {pred}")
     pred_num = np.argmax(pred)
     act_num = np.argmax(gt)
     pred_nums.append(pred_num)
@@ -133,6 +133,8 @@ print(f"original : {y_test_nums[:10]}, predicted : {pred_nums[:10]}")
 # print(type(y_test_nums[0]))
 #y_test_nums = np.array([int(i) for i in list(y_test)])
 print(f"Accuracy : {sum(pred_num==y_test_nums)/len(y_test_nums)}")
+y_test_nums = np.asnumpy(y_test_nums)
+pred_nums = np.asnumpy(pred_nums)
 print(f"Classification Report : {classification_report(y_test_nums, pred_nums)}")
 
 
