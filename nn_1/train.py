@@ -10,7 +10,7 @@ from activations import softmax
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pickle 
-import time
+import time 
 
 mnist = fetch_openml('mnist_784', version=1)
 
@@ -57,9 +57,7 @@ lr=0.01
 #print(f"grads_av : {grads_av}")
 
 loss_lst = []
-batch_size = 512
-start = time.perf_counter()
-print("Starting Training....")
+strt = time.perf_counter()
 while it<num_iters:
     m=len(X_train)
     grads_sum = [np.zeros(np.shape(W[len(W)-1-i])) for i in range(len(W))]
@@ -96,8 +94,8 @@ while it<num_iters:
     print(f"epoch : {it+1}, average loss : {los_sum/count}")
     it+=1
 end = time.perf_counter()
-print(f"Training loop ran for {end-start} seconds")
-with open('models/epo_25_lr_0.01_mb_64-10.pkl', 'wb') as f:
+print(f"{num_iters} epochs completed in {end-strt} seconds")
+with open('models/ep_100_lr_0.01_128-64-10.pkl', 'wb') as f:
     pickle.dump(W, f)
 plt.plot([j.item() for j in loss_lst])
 plt.show()
